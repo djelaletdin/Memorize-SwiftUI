@@ -7,19 +7,25 @@
 
 import Foundation
 
-class EmojiMemoryGame {
+class EmojiMemoryGame: ObservableObject {
     
     static let emojis = ["🚜","🚗","🚑","🚚", "🥦", "🍅", "🌶", "🌽", "🥕", "🥬", "🥒", "🧄", "🍆", "🧅"]
 
     static func createMemoryGame() -> MemoryGame<String>{
-        return MemoryGame(numberOfPairsOfCards: 4) { pairIndex in
+        return MemoryGame(numberOfPairsOfCards: 5) { pairIndex in
             return emojis[pairIndex]
         }
     }
     
-    private var model: MemoryGame<String> = createMemoryGame()
+    @Published private var model: MemoryGame<String> = createMemoryGame()
     
     var cards: Array<MemoryGame<String>.Card>{
         return model.cards
+    }
+    
+    // MARK: - Intends
+    
+    func choose(_ card: MemoryGame<String>.Card){
+        model.choose(card: card)
     }
 }
