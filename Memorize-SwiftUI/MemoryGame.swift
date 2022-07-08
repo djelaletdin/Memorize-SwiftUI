@@ -10,7 +10,14 @@ import Foundation
 struct MemoryGame<CardContent> where CardContent: Equatable {
     
     private (set) var cards: Array<Card>
-    private var indexOfTheOnlyFaceUpCard: Int?
+    private var indexOfTheOnlyFaceUpCard: Int? {
+        get {
+            return cards.indices.filter({ cards[$0].isFaceUp }).oneAndOnly
+        }
+        set {
+            cards.indices.forEach{cards[$0].isFaceUp = ($0 == newValue)}
+        }
+    }
     
     
     // when assigning value to a new variable. it gets copied in struct
@@ -27,19 +34,15 @@ struct MemoryGame<CardContent> where CardContent: Equatable {
                     cards[chosenIndex].isMatched = true
                 }
                 
-                indexOfTheOnlyFaceUpCard = nil
+                cards[chosenIndex].isFaceUp = true
             } else {
-                for index in cards.indices{
-                    cards[index].isFaceUp = false
-                }
                 indexOfTheOnlyFaceUpCard = chosenIndex
             }
-            cards[chosenIndex].isFaceUp.toggle()
         }
     }
     
     init(numberOfPairsOfCards: Int, createCardContent: (Int) -> CardContent){
-        cards = Array<Card>()
+        cards = []
         
         for pairIndex in 0..<numberOfPairsOfCards {
             let content = createCardContent(pairIndex)
@@ -49,9 +52,19 @@ struct MemoryGame<CardContent> where CardContent: Equatable {
     }
     
     struct Card: Identifiable{ 
-        var id: Int
+        let id: Int
         var isFaceUp = false
         var isMatched =  false
-        var content: CardContent
+        let content: CardContent
+    }
+}
+
+extension Array {
+    var oneAndOnly: Element? {
+        if self.count == 1 {
+            return self.first
+        } else {
+            return nil
+        }
     }
 }
