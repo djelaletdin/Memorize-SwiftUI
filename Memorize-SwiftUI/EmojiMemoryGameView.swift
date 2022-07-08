@@ -13,7 +13,7 @@ struct EmojiMemoryGameView: View {
     
     var body: some View {
             ScrollView{
-                LazyVGrid(columns: [GridItem(.adaptive(minimum: 65))]){
+                LazyVGrid(columns: [GridItem(.adaptive(minimum: 100))]){
                     ForEach(game.cards) { card in
                         CardView(card)
                             .aspectRatio(2/3, contentMode: .fit)
@@ -39,26 +39,40 @@ struct CardView: View{
     }
     
     var body: some View{
-        ZStack{
-            
-            let shape = RoundedRectangle(cornerRadius: 25)
-            
-            if card.isFaceUp{
-                shape.fill()
-                    .foregroundColor(.white)
-                shape.strokeBorder(lineWidth: 3)
-                    .foregroundColor(.orange)
-                Text(card.content)
-            } else if card.isMatched{
-                shape.opacity(0)
+        GeometryReader (content: { geometry in // with geometry proxy you can get the size of the container
+            ZStack{
+                
+                let shape = RoundedRectangle(cornerRadius: DrawintConstants.cornerRadius)
+                
+                if card.isFaceUp{
+                    shape.fill()
+                        .foregroundColor(.white)
+                    shape.strokeBorder(lineWidth: DrawintConstants.lineWidth)
+                        .foregroundColor(.orange)
+                    Text(card.content).font(font(size: geometry.size))
+                } else if card.isMatched{
+                    shape.opacity(0)
+                }
+                
+                else {
+                    shape.fill()
+                }
+                
             }
-            
-            else {
-                shape.fill()
-            }
-            
-        }
+        })
     }
+    
+    private func font(size: CGSize) -> Font {
+        return Font.system(size: min(size.width, size.height) * DrawintConstants.fontScale)
+    }
+    
+    private struct DrawintConstants {
+        static let cornerRadius: CGFloat = 25
+        static let lineWidth: CGFloat = 3
+        static let fontScale: CGFloat = 0.8
+        
+    }
+    
 }
 
 struct ContentView_Previews: PreviewProvider {
